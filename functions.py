@@ -44,12 +44,9 @@ def get_berries():
     return result
 
 
-def get_user_data(telegram_id=None, telephone_number=None):
+def get_user_data(telegram_id):
     result = {}
-    if telegram_id:
-        user = User.objects.get(telegram_id=telegram_id)
-    else:
-        user = User.objects.get(telephone_number__contained_by=telephone_number)
+    user = User.objects.get(telegram_id=telegram_id)
     result['user'] = {
         'telegram_id': user.telegram_id,
         'telephone_number': user.telephone_number,
@@ -91,13 +88,15 @@ def get_order_data(order_number):
     return result
 
 
-def create_user(user_data):
-    user = User.objects.create(
+def create_or_update_user(user_data):
+    user, _ = User.objects.update_or_create(
                 telegram_id=user_data['telegram_id'],
-                telephone_number=user_data.get('telephone_number', None),
-                name=user_data.get('name', None),
-                surname=user_data.get('surname', None),
-                parent_name=user_data.get('parent_name', None)
+                defaults={
+                'telephone_number': user_data.get('telephone_number', None),
+                'name': user_data.get('name', None),
+                'surname': user_data.get('surname', None),
+                'parent_name': user_data.get('parent_name', None)
+                }
             )
     return user.telegram_id
 
@@ -122,3 +121,10 @@ def create_order(order_data):
         order.decor.add(Decoration.objects.get(name__contains=decor))
     return order
 
+
+def check_user(telegram_id):
+    try:
+        User.objects.get(telegram_id=telegram_id)
+        return True
+    except User.DoesNotExist:
+        return False

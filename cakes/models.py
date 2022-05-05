@@ -9,10 +9,10 @@ class User(models.Model):
         unique=True,
         max_length=50
     )
-    telephone_number = models.CharField('Номер телефона', max_length=20, blank=True)
-    surname = models.CharField('Фамилия', max_length=200, blank=True)
-    name = models.CharField('Имя', max_length=200, blank=True)
-    parent_name = models.CharField('Отчество', max_length=200, blank=True)
+    telephone_number = models.CharField('Номер телефона', max_length=20, null=True)
+    surname = models.CharField('Фамилия', max_length=200, null=True)
+    name = models.CharField('Имя', max_length=200, null=True)
+    parent_name = models.CharField('Отчество', max_length=200, null=True)
     registration_date = models.DateField(default=timezone.now)
 
     def __str__(self):
