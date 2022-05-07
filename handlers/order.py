@@ -3,6 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
 from keyboards import level_keyboard, form_keyboard, topping_keyboard, berries_keyboard, decor_keyboard, inscription_keyboard, comment_keyboard, promocode_keyboard
+from handlers.initialization import menu
 
 from create_bot import dispatcher
 
@@ -22,6 +23,7 @@ class FSMOrder(StatesGroup):
 
 
 # начало диалога
+@dispatcher.message_handler(text='Собрать торт')
 async def order_start(message: types.Message):
     await FSMOrder.levels.set()
     await message.reply('Выберите количество уровней торта', reply_markup=level_keyboard)
