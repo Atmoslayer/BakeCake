@@ -96,7 +96,8 @@
 
 Создает новый заказ. Следует передать `id` и данные о заказе в формате словаря
 
-		{
+		telegram_id = 'Michalbl4'
+		order_data = {
 			'price': 1200.0,
 			'delivery': datetime.datetime(2022, 5, 7, 6, 0, 8, tzinfo=datetime.timezone.utc),
 			'delivery_adress': 'Москва, Кремль',
