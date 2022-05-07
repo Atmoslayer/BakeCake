@@ -58,10 +58,11 @@ class Order(models.Model):
         max_length=1000,
         blank=True
     )
-    price = models.FloatField(default=0.0)
-    init_date = models.DateTimeField(default=timezone.now())
-    address = models.TextField(max_length=500)
-    delivery_date = models.DateTimeField(default=None)
+    price = models.FloatField('Цена',default=0.0)
+    init_date = models.DateTimeField('Дата создания заказа',default=timezone.now())
+    address = models.TextField('Адрес доставки', max_length=500)
+    delivery_date = models.DateTimeField('Дата и время доставки', default=None)
+    promocode = models.CharField('Промокод', max_length=100, blank=True)
 
     def __str__(self):
         return 'Заказ номер {}'.format(self.number)

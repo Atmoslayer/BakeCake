@@ -1,47 +1,13 @@
 import os
 import django
 
+from django.utils import timezone
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 django.setup()
 
 
-from cakes.models import Order, User, Layer, Topping, Shape, Berry, Decoration
-
-
-def get_toppings():
-    result = []
-    for topping in Topping.objects.filter(availability=True):
-        result.append({
-            topping.name: topping.price
-    })
-    return result
-
-
-def get_layers():
-    result = []
-    for layer in Layer.objects.filter(availability=True):
-        result.append({
-            layer.name: layer.price          
-    })
-    return result
-
-
-def get_shapes():
-    result = []
-    for shape in Shape.objects.filter(availability=True):
-        result.append({
-            shape.name: shape.price
-    })
-    return result
-
-
-def get_berries():
-    result = []
-    for berry in Berry.objects.filter(availability=True):
-        result.append({
-            berry.name: berry.price
-    })
-    return result
+from cakes.models import Order, User
 
 
 def get_user_data(telegram_id):
@@ -100,24 +66,20 @@ def create_or_update_user(user_data):
     return user.telegram_id
 
 
-def create_order(order_data):
+def create_order(telegram_id, order_data):
     order = Order(
-        user=User.objects.get(telegram_id=order_data['user']),
+        user=User.objects.get(telegram_id=telegram_id),
         price=order_data.get('price', None),
-        delivery_date=order_data.get('delivery', None),
-        address=order_data.get('address', None),
-        layers=Layer.objects.get(name__contains=order_data['layers']),
-        shape=Shape.objects.get(name__contains=order_data['shape']),
-        text=order_data.get('text', None),
-        comments=order_data.get('comments', None)
+        delivery_date=order_data.get('delivery', timezone.now()),
+        address=order_data.get('delivery_adress', ''),
+        layers=order_data.get('layers', ''),
+        shape=order_data.get('form', ''),
+        topping=order_data.get('topping', ''),
+        decor=order_data.get('decor', ''),
+        text=order_data.get('inscription', ''),
+        comments=order_data.get('comment', '')
     )
     order.save()
-    for topping in order_data['topping']:
-        order.topping.add(Topping.objects.get(name__contains=topping))
-    for berry in order_data['berries']:
-        order.berries.add(Berry.objects.get(name__contains=berry))
-    for decor in order_data['decor']:
-        order.decor.add(Decoration.objects.get(name__contains=decor))
     return order
 
 
