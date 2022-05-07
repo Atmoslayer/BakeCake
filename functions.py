@@ -10,15 +10,15 @@ django.setup()
 from cakes.models import Order, User
 
 
+### Получение информации о пользователе, в том числе список заказов и последний адрес доставки
 def get_user_data(telegram_id):
     result = {}
     user = User.objects.get(telegram_id=telegram_id)
     result['user'] = {
-        'telegram_id': user.telegram_id,
-        'telephone_number': user.telephone_number,
-        'surname': user.surname,
-        'name': user.name,
-        'parent_name': user.parent_name,
+        'id': user.telegram_id,
+        'phone_number': user.telephone_number,
+        'last_name': user.surname,
+        'first_name': user.name,
         'registration_date': user.registration_date
     }
     orders = Order.objects.filter(user=user)
@@ -34,7 +34,7 @@ def get_user_data(telegram_id):
         result['user']['last_address'] = orders.latest('init_date').address
     return result
 
-
+### Получение информации о заказе
 def get_order_data(order_number):
     order = Order.objects.get(number=order_number)
     result = {
@@ -42,18 +42,19 @@ def get_order_data(order_number):
         'date': order.init_date,
         'price': order.price,
         'delivery': order.delivery_date,
-        'address': order.address,
-        'layers': order.layers.name,
-        'shape': order.shape.name,
-        'topping': list(order.topping.all().values_list('name', flat=True)),
-        'berries': list(order.berries.all().values_list('name', flat=True)),
-        'decor': list(order.decor.all().values_list('name', flat=True)),
-        'comments': order.comments,
-        'text': order.text
+        'delivery_adress': order.address,
+        'levels': order.layers,
+        'form': order.shape,
+        'topping': order.topping,
+        'berries': order.berries,
+        'decor': order.decor,
+        'comment': order.comments,
+        'inscription': order.text
     }
     return result
 
 
+### Создание пользователя либо обновление его данных
 def create_or_update_user(user_data):
     user, _ = User.objects.update_or_create(
                 telegram_id=user_data['id'],
@@ -65,7 +66,7 @@ def create_or_update_user(user_data):
             )
     return user.telegram_id
 
-
+### Создание заказа
 def create_order(telegram_id, order_data):
     order = Order(
         user=User.objects.get(telegram_id=telegram_id),
@@ -82,7 +83,7 @@ def create_order(telegram_id, order_data):
     order.save()
     return order
 
-
+### Проверка, есть ли пользователь в БД
 def check_user(telegram_id):
     try:
         User.objects.get(telegram_id=telegram_id)
