@@ -26,7 +26,7 @@
 
 Запускайте имеющиеся функции (в тестовой БД есть пользователь с `telegram_id = 'Michalbl4'`, можно запросить его)
 
-Для добавления в код просто импортируйте в него functions
+Для добавления в код просто импортируйте в него `functions`
 
 ### get_user_data(telegram_id)
 
@@ -83,11 +83,32 @@
 
 Данные следует передавать в следующем формате
 
-		{
-		'id': 'Michalbl4',
-		'phone_number': '56789',
-		'last_name': 'Миронов',
-		'first_name': 'Михаил'
+		user_data = {
+			'id': 'Michalbl4',
+			'phone_number': '56789',
+			'last_name': 'Миронов',
+			'first_name': 'Михаил'
 		}
+Возвращает `id` нового либо обновленного пользователя.
+ 
+
+### create_order(telegram_id, order_data)
+
+Создает новый заказ. Следует передать `id` и данные о заказе в формате словаря
+
+		{
+			'price': 1200.0,
+			'delivery': datetime.datetime(2022, 5, 7, 6, 0, 8, tzinfo=datetime.timezone.utc),
+			'delivery_adress': 'Москва, Кремль',
+			'levels': 2,
+			'form': '2',
+			'topping': '',
+			'berries': '',
+			'decor': '',
+			'comment': '',
+			'inscription': ''
+		}
+
+Возвращает порядковый номер нового заказа.
 
 

@@ -86,13 +86,14 @@ def create_order(telegram_id, order_data):
         address=order_data.get('delivery_adress', ''),
         layers=order_data.get('layers', ''),
         shape=order_data.get('form', ''),
+        berries=order_data.get('berries', ''),
         topping=order_data.get('topping', ''),
         decor=order_data.get('decor', ''),
         text=order_data.get('inscription', ''),
         comments=order_data.get('comment', '')
     )
     order.save()
-    return order
+    return order.number
 
 ### Проверка, есть ли пользователь в БД
 def check_user(telegram_id):
