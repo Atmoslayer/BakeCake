@@ -90,12 +90,11 @@ def get_order_data(order_number):
 
 def create_or_update_user(user_data):
     user, _ = User.objects.update_or_create(
-                telegram_id=user_data['telegram_id'],
+                telegram_id=user_data['id'],
                 defaults={
-                'telephone_number': user_data.get('telephone_number', None),
-                'name': user_data.get('name', None),
-                'surname': user_data.get('surname', None),
-                'parent_name': user_data.get('parent_name', None)
+                'telephone_number': user_data.get('phone_number', ''),
+                'name': user_data.get('first_name', ''),
+                'surname': user_data.get('last_name', ''),
                 }
             )
     return user.telegram_id

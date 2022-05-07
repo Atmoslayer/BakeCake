@@ -9,101 +9,43 @@ class User(models.Model):
         unique=True,
         max_length=50
     )
-    telephone_number = models.CharField('Номер телефона', max_length=20, null=True)
-    surname = models.CharField('Фамилия', max_length=200, null=True)
-    name = models.CharField('Имя', max_length=200, null=True)
-    parent_name = models.CharField('Отчество', max_length=200, null=True)
+    telephone_number = models.CharField('Номер телефона', max_length=20, blank=True)
+    surname = models.CharField('Фамилия', max_length=200, blank=True)
+    name = models.CharField('Имя', max_length=200, blank=True)
     registration_date = models.DateField(default=timezone.now)
 
     def __str__(self):
-        return ("{} {} {}".format(self.surname, self.name, self.parent_name))
+        return ("{} {}".format(self.surname, self.name))
 
-
-class Layer(models.Model):
-    layers_amount = models.IntegerField(
-        'Количество слоев',
-        primary_key=True,
-        unique=True
-    )
-    name = models.CharField('Описание', max_length=200)
-    price = models.FloatField('Цена')
-    availability = models.BooleanField('Доступно к заказу', default=False)
-
-    def __str__(self):
-        return self.name
-
-
-class Shape(models.Model):
-    id = models.AutoField(primary_key=True, unique=True)
-    name = models.CharField('Название', max_length=200)
-    price = models.FloatField('Цена')
-    availability = models.BooleanField('Доступно к заказу', default=False)
-
-    def __str__(self):
-        return self.name
-
-
-class Topping(models.Model):
-    id = models.AutoField(primary_key=True, unique=True)
-    name = models.CharField('Название', max_length=200)
-    price = models.FloatField('Цена')
-    availability = models.BooleanField('Доступно к заказу', default=False)
-
-    def __str__(self):
-        return self.name
-
-
-class Berry(models.Model):
-    id = models.AutoField(primary_key=True, unique=True)
-    name = models.CharField('Название', max_length=200)
-    price = models.FloatField('Цена')
-    availability = models.BooleanField('Доступно к заказу', default=False)
-
-    def __str__(self):
-        return self.name
-
-
-class Decoration(models.Model):
-    id = models.AutoField(primary_key=True, unique=True)
-    name = models.CharField('Название', max_length=200)
-    price = models.FloatField('Цена')
-    availability = models.BooleanField('Доступно к заказу', default=False)
-
-    def __str__(self):
-        return self.name
 
 
 class Order(models.Model):
-    number = models.AutoField(primary_key=True, unique=True)
+    number = models.AutoField('Номер заказа',primary_key=True, unique=True)
     user = models.ForeignKey(
         User,
+        related_name='orders',
         on_delete=models.SET_NULL,
         null = True
     )
-    layers = models.ForeignKey(
-        Layer,
-        on_delete=models.SET_NULL,
-        limit_choices_to={'availability': True},
-        null = True
+    layers = models.IntegerField(
+        'Количество слоев'
     )
-    shape = models.ForeignKey(
-        Shape,
-        on_delete=models.SET_NULL,
-        limit_choices_to={'availability': True},
-        null = True
+    shape = models.CharField(
+        'Форма',
+        max_length=100
     )
-    topping = models.ManyToManyField(
-        Topping,
-        limit_choices_to={'availability': True}
+    topping = models.CharField(
+        'Топпинг',
+        max_length=100
     )
-    berries = models.ManyToManyField(
-        Berry,
-        limit_choices_to={'availability': True},
+    berries = models.CharField(
+        'Ягоды',
+        max_length=250,
         blank=True
     )
-    decor = models.ManyToManyField(
-        Decoration,
-        limit_choices_to={'availability': True},
+    decor = models.CharField(
+        'Украшение',
+        max_length=250,
         blank=True
     )
     text = models.TextField(
