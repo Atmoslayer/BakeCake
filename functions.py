@@ -10,10 +10,13 @@ django.setup()
 from cakes.models import Order, User
 
 
-### Получение информации о пользователе, в том числе список заказов и последний адрес доставки
+### Получение информации о пользователе, в том числе список заказов и последний адрес доставки. Если пользователя нет, возвращает None
 def get_user_data(telegram_id):
+    try:
+        user = User.objects.get(telegram_id=telegram_id)
+    except User.DoesNotExist:
+        return
     result = {}
-    user = User.objects.get(telegram_id=telegram_id)
     result['user'] = {
         'id': user.telegram_id,
         'phone_number': user.telephone_number,
@@ -26,9 +29,17 @@ def get_user_data(telegram_id):
     for order in orders:
         result['orders'].append({
             'number': order.number,
-            'price': order.price,
             'date': order.init_date,
-            'delivery': order.delivery_date
+            'price': order.price,
+            'delivery': order.delivery_date,
+            'delivery_adress': order.address,
+            'levels': order.layers,
+            'form': order.shape,
+            'topping': order.topping,
+            'berries': order.berries,
+            'decor': order.decor,
+            'comment': order.comments,
+            'inscription': order.text
         })
     if orders:
         result['user']['last_address'] = orders.latest('init_date').address

@@ -6,7 +6,7 @@
 
 Скачайте содержимое репозитория на ПК.
 
-Установите зависимости командой
+Установите зависимости (там только Django) командой
 
     pip install -r requirements.txt
     
@@ -24,5 +24,53 @@
 
     import functions
 
-Запускайте имеющиеся функции (в тестовой БД есть пользователь с номером телефона `12345678`, можно запросить его)
+Запускайте имеющиеся функции (в тестовой БД есть пользователь с `telegram_id = 'Michalbl4'`, можно запросить его)
+
+Для добавления в код просто импортируйте в него functions
+
+### get_user_data(telegram_id)
+
+Возвращает данные о пользователе и список его заказов по telegram_id в следующем формате
+
+		{'user':
+			{'id': 'Michalbl4',
+			 'phone_number': '56789',
+			 'last_name': 'Миронов',
+			 'first_name': 'Михаил',
+			 'registration_date': datetime.date(2022, 5, 5),
+			 'last_address': 'Москва, Кремль'},
+		 'orders':
+			[
+				{
+					'number': 1,
+					'date': datetime.datetime(2022, 5, 5, 5, 56, 51, tzinfo=datetime.timezone.utc),
+					'price': 2000.0,
+					'delivery': datetime.datetime(2022, 5, 7, 5, 57, 18, tzinfo=datetime.timezone.utc),
+					'delivery_adress':
+					'Москва, Кремль',
+					'levels': 2,
+					'form': 'Квадрат',
+					'topping': 'Кленовый сироп',
+					'berries': '',
+					'decor': '',
+					'comment': '',
+					'inscription': ''
+				},
+				{
+					'number': 2,
+					'date': datetime.datetime(2022, 5, 5, 5, 59, 31, tzinfo=datetime.timezone.utc),
+					'price': 1200.0,
+					'delivery': datetime.datetime(2022, 5, 7, 6, 0, 8, tzinfo=datetime.timezone.utc),
+					'delivery_adress': 'Москва, Кремль',
+					'levels': 2,
+					'form': '2',
+					'topping': '',
+					'berries': '',
+					'decor': '',
+					'comment': '',
+					'inscription': ''
+				}
+			]
+		}
+
 
