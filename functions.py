@@ -105,4 +105,18 @@ def check_user(telegram_id):
     except User.DoesNotExist:
         return False
 
-get_user_data_async = sync_to_async(get_user_data, thread_sensitive=True)
+async def get_user_data_async(telegram_id):
+    result = await sync_to_async(get_user_data, thread_sensitive=True)(telegram_id=telegram_id)
+    return result
+
+async def get_order_data_async(order_number):
+    result = await sync_to_async(get_order_data, thread_sensitive=True)(order_number=order_number)
+    return result
+
+async def create_or_update_user_async(user):
+    result = await sync_to_async(create_or_update_user_async, thread_sensitive=True)(user=user)
+    return result
+
+async def create_order_async(telegram_id, order_data):
+    result = await sync_to_async(create_order, thread_sensitive=True)(telegram_id=telegram_id, order_data=order_data)
+    return result

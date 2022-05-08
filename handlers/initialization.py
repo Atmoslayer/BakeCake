@@ -2,8 +2,9 @@ from aiogram import types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
+
 from create_bot import dispatcher, bot
-from functions import get_user_data
+from functions import get_user_data_async
 
 user_info = {'first_name': '',
              'last_name': '',
@@ -28,7 +29,7 @@ class Initialization(StatesGroup):
 # Здесь стартует приём сообщений от пользователя
 async def check_user(message: types.Message, state: FSMContext):
     user_id = message.from_user.username
-    user_info = get_user_data(user_id)  #Здесь вызывается функция для получения данных о пользователе
+    user_info = await get_user_data_async(user_id)  #Здесь вызывается функция для получения данных о пользователе
     if user_info: #Если данные есть, говорим, что они есть и сразу переходим к процессу сборки торта
         button_start_order = KeyboardButton('Собрать торт')
         button_check_orders = KeyboardButton('История заказов')
@@ -38,6 +39,8 @@ async def check_user(message: types.Message, state: FSMContext):
         await bot.send_message(message.from_user.id, text='Вы уже зарегистрированы', reply_markup=menu)
         print(user_info)
         await state.finish()
+        result = await functions.get_order_data_async(1)
+        print(result)
     else: #Если данных нет, идём по процессу регистрации
         await Initialization.waiting_for_check_user.set()
 
