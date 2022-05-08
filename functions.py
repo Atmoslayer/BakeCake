@@ -1,7 +1,9 @@
 import os
 import django
 
+from asgiref.sync import sync_to_async
 from django.utils import timezone
+
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 django.setup()
@@ -102,3 +104,5 @@ def check_user(telegram_id):
         return True
     except User.DoesNotExist:
         return False
+
+get_user_data_async = sync_to_async(get_user_data, thread_sensitive=True)
