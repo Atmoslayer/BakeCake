@@ -1,28 +1,30 @@
+from email import message
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-level_1_btn = KeyboardButton('1 уровень(+400)')
-level_2_btn = KeyboardButton('2 уровня(+750)')
-level_3_btn = KeyboardButton('3 уровня(+1100)')
+level_1_btn = InlineKeyboardButton(text='1 уровень', callback_data='cb_1 уровень:40000')
+level_2_btn = InlineKeyboardButton(text='2 уровня', callback_data='cb_2 уровня:75000')
+level_3_btn = InlineKeyboardButton(text='3 уровня', callback_data='cb_3 уровня:110000')
 
-level_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+level_keyboard = InlineKeyboardMarkup(row_width=1)
 level_keyboard.add(level_1_btn).add(level_2_btn).add(level_3_btn)
 
-square_btn = KeyboardButton('Квадрат(+600)')
-circle_btn = KeyboardButton('Круг(+400)')
-rectangle_btn = KeyboardButton('Прямоугольник(+1000)')
+square_btn = InlineKeyboardButton(text='Квадрат',callback_data='cb_Квадрат:60000')
+circle_btn = InlineKeyboardButton(text='Круг',callback_data='cb_Круг:40000')
+rectangle_btn = InlineKeyboardButton(text='Прямоугольник',callback_data='cb_Прямоугольник:100000')
 
-form_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+form_keyboard = InlineKeyboardMarkup(row_width=1)
 form_keyboard.add(square_btn).add(circle_btn).add(rectangle_btn)
 
-topping_none_btn = KeyboardButton('Без топпинга(+0)')
-topping_white_btn = KeyboardButton('Белый соус(+200)')
-topping_caramel_btn = KeyboardButton('Карамельный сироп(+180)')
-topping_maple_btn = KeyboardButton('Кленовый сироп(+200)')
-topping_strawberry_btn = KeyboardButton('Клубничный сироп(+300)')
-topping_blueberry_btn = KeyboardButton('Черничный сироп(+350)')
-topping_milk_btn = KeyboardButton('Молочный шоколад(+200)')
+topping_none_btn = InlineKeyboardButton(text='Без топпинга', callback_data='cb_Без топпинга:0')
+topping_white_btn = InlineKeyboardButton(text='Белый соус', callback_data='cb_Белый соус:20000')
+topping_caramel_btn = InlineKeyboardButton(text='Карамельный сироп', callback_data='cb_Карамельный сироп:18000')
+topping_maple_btn = InlineKeyboardButton(text='Кленовый сироп', callback_data='cb_Кленовый сироп:20000')
+topping_strawberry_btn = InlineKeyboardButton(text='Клубничный сироп', callback_data='cb_Клубничный сироп:30000')
+topping_blueberry_btn = InlineKeyboardButton(text='Черничный сироп', callback_data='cb_Черничный сироп:35000')
+topping_milk_btn = InlineKeyboardButton(text='Молочный шоколад', callback_data='cb_Молочный шоколад:20000')
 
-topping_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+topping_keyboard = InlineKeyboardMarkup(row_width=2)
 topping_keyboard.add(
     topping_none_btn
     ).row(
@@ -36,13 +38,13 @@ topping_keyboard.add(
         topping_milk_btn
     )
 
-berries_none_btn = KeyboardButton('Без ягод(+0)')
-berries_blackberry_btn = KeyboardButton('Ежевика(+400)')
-berries_raspberry_btn = KeyboardButton('Малина(+300)')
-berries_blueberry_btn = KeyboardButton('Голубика(+450)')
-berries_strawberry_btn = KeyboardButton('Клубника(+500)')
+berries_none_btn = InlineKeyboardButton(text='Без ягод', callback_data='cb_Без ягод:0')
+berries_blackberry_btn = InlineKeyboardButton(text='Ежевика', callback_data='cb_Ежевика:40000')
+berries_raspberry_btn = InlineKeyboardButton(text='Малина', callback_data='cb_Малина:30000')
+berries_blueberry_btn = InlineKeyboardButton(text='Голубика', callback_data='cb_Голубика:45000')
+berries_strawberry_btn = InlineKeyboardButton(text='Клубника', callback_data='cb_Клубника:50000')
 
-berries_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+berries_keyboard = InlineKeyboardMarkup(row_width=2)
 berries_keyboard.add(
     berries_none_btn
     ).row(
@@ -53,15 +55,15 @@ berries_keyboard.add(
         berries_strawberry_btn
     )
 
-decor_none_btn = KeyboardButton('Без декора(+0)')
-decor_pistachios_btn = KeyboardButton('Фисташки(+300)')
-decor_meringue_btn = KeyboardButton('Безе(+400)')
-decor_hazelnut_btn = KeyboardButton('Фундук(+350)')
-decor_pecan_btn = KeyboardButton('Пекан(+300)')
-decor_marshmallow_btn = KeyboardButton('Маршмеллоу(+200)')
-decor_marzipan_btn = KeyboardButton('Марципан(+280')
+decor_none_btn = InlineKeyboardButton(text='Без декора', callback_data='cb_Без декора:0')
+decor_pistachios_btn = InlineKeyboardButton(text='Фисташки', callback_data='cb_Фисташки:30000')
+decor_meringue_btn = InlineKeyboardButton(text='Безе', callback_data='cb_Безе:40000')
+decor_hazelnut_btn = InlineKeyboardButton(text='Фундук', callback_data='cb_Фундук:35000')
+decor_pecan_btn = InlineKeyboardButton(text='Пекан', callback_data='cb_Пекан:30000')
+decor_marshmallow_btn = InlineKeyboardButton(text='Маршмеллоу', callback_data='cb_Маршмеллоу:20000')
+decor_marzipan_btn = InlineKeyboardButton(text='Марципан', callback_data='cb_Марципан:28000')
 
-decor_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+decor_keyboard = InlineKeyboardMarkup(row_width=2)
 decor_keyboard.add(
         decor_none_btn
     ).row(
