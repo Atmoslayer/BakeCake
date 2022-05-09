@@ -2,7 +2,8 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
-from keyboards import level_keyboard, form_keyboard, topping_keyboard, berries_keyboard, decor_keyboard, inscription_keyboard, comment_keyboard, promocode_keyboard
+from keyboards import level_keyboard, form_keyboard, topping_keyboard, berries_keyboard, decor_keyboard, inscription_keyboard, comment_keyboard, promocode_keyboard, time_keyboard
+from aiogram_calendar import simple_cal_callback, SimpleCalendar
 
 from create_bot import dispatcher
 
@@ -120,15 +121,18 @@ async def specify_adress(message: types.Message, state: FSMContext):
     async with state.proxy() as cake:
         cake['delivery_adress'] = message.text
     await FSMOrder.next()
-    await message.reply('Выберите дату доставки')
+    await message.reply('Выберите дату доставки', reply_markup=await SimpleCalendar().start_calendar())
 
 
 # девятый ответ
-async def choose_date(message: types.Message, state: FSMContext):
-    async with state.proxy() as cake:
-        cake['delivery_date'] = message.text
-    await FSMOrder.next()
-    await message.reply('Выберите время доставки')
+async def choose_date(callback: types.CallbackQuery, callback_data: dict, state: FSMContext):
+    selected, date = await SimpleCalendar().process_selection(callback, callback_data)
+    if selected:
+        async with state.proxy() as cake:
+            cake['delivery_date'] = date.strftime("%d/%m/%Y")
+        await FSMOrder.next()
+        await callback.message.reply('Выберите время доставки', reply_markup=time_keyboard)
+        await callback.answer()
 
 
 # десятый ответ
@@ -163,6 +167,6 @@ def register_handlers_order(dispatcher: Dispatcher):
     dispatcher.register_message_handler(choose_inscription, state=FSMOrder.inscription)
     dispatcher.register_message_handler(get_comment, state=FSMOrder.comment)
     dispatcher.register_message_handler(specify_adress, state=FSMOrder.delivery_address)
-    dispatcher.register_message_handler(choose_date, state=FSMOrder.delivery_date)
+    dispatcher.register_callback_query_handler(choose_date, simple_cal_callback.filter(), state=FSMOrder.delivery_date)
     dispatcher.register_message_handler(choose_time, state=FSMOrder.delivery_time)
     dispatcher.register_message_handler(specify_promocode, state=FSMOrder.promocode)

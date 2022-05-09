@@ -1,4 +1,3 @@
-from email import message
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -88,3 +87,35 @@ comment_keyboard.add(comment_btn)
 promocode_btn = KeyboardButton('Нет промокода')
 promocode_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
 promocode_keyboard.add(promocode_btn)
+
+time_9_btn = KeyboardButton('9 часов')
+time_10_btn = KeyboardButton('10 часов')
+time_11_btn = KeyboardButton('11 часов')
+time_12_btn = KeyboardButton('12 часов')
+time_13_btn = KeyboardButton('13 часов')
+time_14_btn = KeyboardButton('14 часов')
+time_15_btn = KeyboardButton('15 часов')
+time_16_btn = KeyboardButton('16 часов')
+time_17_btn = KeyboardButton('17 часов')
+time_18_btn = KeyboardButton('18 часов')
+time_19_btn = KeyboardButton('19 часов')
+time_20_btn = KeyboardButton('20 часов')
+
+time_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+time_keyboard.row(
+            time_9_btn,
+            time_10_btn,
+            time_11_btn
+        ).row(
+            time_12_btn,
+            time_13_btn,
+            time_14_btn
+        ).row(
+            time_15_btn,
+            time_16_btn,
+            time_17_btn
+        ).row(
+            time_18_btn,
+            time_19_btn,
+            time_20_btn
+        )
