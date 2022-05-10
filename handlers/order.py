@@ -2,10 +2,10 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
-from keyboards import level_keyboard, form_keyboard, topping_keyboard, berries_keyboard, decor_keyboard, inscription_keyboard, comment_keyboard, promocode_keyboard, time_keyboard
+from keyboards import keyboard_client, menu_keyboard, level_keyboard, form_keyboard, topping_keyboard, berries_keyboard, decor_keyboard, inscription_keyboard, comment_keyboard, promocode_keyboard, time_keyboard
 from aiogram_calendar import simple_cal_callback, SimpleCalendar
 
-from create_bot import dispatcher
+# from create_bot import dispatcher
 
 order_cost = 0
 
@@ -27,6 +27,8 @@ class FSMOrder(StatesGroup):
 # начало диалога
 async def order_start(message: types.Message):
     await FSMOrder.levels.set()
+    await message.reply('В этом разделе вы можете собрать торт по своим предпочтениям', reply_markup=menu_keyboard)
+    await message.answer('Шаг 1')
     await message.reply('Выберите количество уровней торта', reply_markup=level_keyboard)
 
 
@@ -36,7 +38,7 @@ async def cancel_handler(message: types.Message, state: FSMContext):
     if current_state is None:
         return
     await state.finish()
-    await message.reply('OK')
+    await message.reply('OK', reply_markup=keyboard_client)
 
 
 # ловим первый ответ
@@ -47,6 +49,7 @@ async def choose_levels(callback: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as cake:
         cake['levels'] = user_input[0][3:]
     await FSMOrder.next()
+    await callback.message.answer('Шаг 2')
     await callback.message.reply('Выберите форму торта', reply_markup=form_keyboard)
     await callback.answer()
 
@@ -59,6 +62,7 @@ async def choose_form(callback: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as cake:
         cake['form'] = user_input[0][3:]
     await FSMOrder.next()
+    await callback.message.answer('Шаг 3')
     await callback.message.reply('Выберите топпинг', reply_markup=topping_keyboard)
     await callback.answer()
 
@@ -71,6 +75,7 @@ async def choose_topping(callback: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as cake:
         cake['topping'] = user_input[0][3:]
     await FSMOrder.next()
+    await callback.message.answer('Шаг 4')
     await callback.message.reply('Выберите ягоды', reply_markup=berries_keyboard)
     await callback.answer()
 
@@ -83,6 +88,7 @@ async def choose_berries(callback: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as cake:
         cake['berries'] = user_input[0][3:]
     await FSMOrder.next()
+    await callback.message.answer('Шаг 5')
     await callback.message.reply('Выберите декор', reply_markup=decor_keyboard)
     await callback.answer()
 
@@ -95,6 +101,7 @@ async def choose_decor(callback: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as cake:
         cake['decor'] = user_input[0][3:]
     await FSMOrder.next()
+    await callback.message.answer('Шаг 6')
     await callback.message.reply('Надпись на торт', reply_markup=inscription_keyboard)
     await callback.answer()
 
@@ -104,6 +111,7 @@ async def choose_inscription(message: types.Message, state: FSMContext):
     async with state.proxy() as cake:
         cake['inscription'] = message.text
     await FSMOrder.next()
+    await message.answer('Шаг 7')
     await message.reply('Комментарий к заказу', reply_markup=comment_keyboard)
 
 
@@ -112,7 +120,8 @@ async def get_comment(message: types.Message, state: FSMContext):
     async with state.proxy() as cake:
         cake['comment'] = message.text
     await FSMOrder.next()
-    await message.reply('Укажите адрес доставки')
+    await message.answer('Шаг 8')
+    await message.reply('Укажите адрес доставки', reply_markup=menu_keyboard)
 
 
 # восьмой ответ
@@ -121,6 +130,7 @@ async def specify_adress(message: types.Message, state: FSMContext):
     async with state.proxy() as cake:
         cake['delivery_adress'] = message.text
     await FSMOrder.next()
+    await message.answer('Шаг 7', reply_markup=menu_keyboard)
     await message.reply('Выберите дату доставки', reply_markup=await SimpleCalendar().start_calendar())
 
 
@@ -131,6 +141,7 @@ async def choose_date(callback: types.CallbackQuery, callback_data: dict, state:
         async with state.proxy() as cake:
             cake['delivery_date'] = date.strftime("%d/%m/%Y")
         await FSMOrder.next()
+        await callback.message.answer('Шаг 8', reply_markup=menu_keyboard)
         await callback.message.reply('Выберите время доставки', reply_markup=time_keyboard)
         await callback.answer()
 
@@ -140,6 +151,7 @@ async def choose_time(message: types.Message, state: FSMContext):
     async with state.proxy() as cake:
         cake['delivery_time'] = message.text
     await FSMOrder.next()
+    await message.answer('Шаг 8')
     await message.reply('Введите промокод, если он у вас есть', reply_markup=promocode_keyboard)
 
 
@@ -157,8 +169,8 @@ async def specify_promocode(message: types.Message, state: FSMContext):
 # регистрируем хендлеры
 def register_handlers_order(dispatcher: Dispatcher):
     dispatcher.register_message_handler(order_start, commands=['Собрать_торт'], state=None)
-    dispatcher.register_message_handler(cancel_handler, state="*", commands='отмена')
-    dispatcher.register_message_handler(cancel_handler, Text(equals='отмена', ignore_case=True), state="*")
+    dispatcher.register_message_handler(cancel_handler, state="*", commands='Главное меню')
+    dispatcher.register_message_handler(cancel_handler, Text(equals='Главное меню', ignore_case=True), state="*")
     dispatcher.register_callback_query_handler(choose_levels, Text(startswith='cb_'), state=FSMOrder.levels)
     dispatcher.register_callback_query_handler(choose_form, Text(startswith='cb_'), state=FSMOrder.form)
     dispatcher.register_callback_query_handler(choose_topping, Text(startswith='cb_'), state=FSMOrder.topping)

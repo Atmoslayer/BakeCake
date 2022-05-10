@@ -1,6 +1,11 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+cancel_button = KeyboardButton('Главное меню')
+
+menu_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+menu_keyboard.row(cancel_button)
+
 level_1_btn = InlineKeyboardButton(text='1 уровень', callback_data='cb_1 уровень:40000')
 level_2_btn = InlineKeyboardButton(text='2 уровня', callback_data='cb_2 уровня:75000')
 level_3_btn = InlineKeyboardButton(text='3 уровня', callback_data='cb_3 уровня:110000')
@@ -78,15 +83,15 @@ decor_keyboard.add(
 
 inscription_btn = KeyboardButton('Без надписи')
 inscription_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-inscription_keyboard.add(inscription_btn)
+inscription_keyboard.add(inscription_btn).add(cancel_button)
 
 comment_btn = KeyboardButton('Без комментария')
 comment_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-comment_keyboard.add(comment_btn)
+comment_keyboard.add(comment_btn).add(cancel_button)
 
 promocode_btn = KeyboardButton('Нет промокода')
 promocode_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-promocode_keyboard.add(promocode_btn)
+promocode_keyboard.add(promocode_btn).add(cancel_button)
 
 time_9_btn = KeyboardButton('9 часов')
 time_10_btn = KeyboardButton('10 часов')
@@ -118,4 +123,4 @@ time_keyboard.row(
             time_18_btn,
             time_19_btn,
             time_20_btn
-        )
+        ).add(cancel_button)
