@@ -1,1 +1,1 @@
-from handlers import client, other, order, initialization
+from handlers import client, other, order, initialization, payment

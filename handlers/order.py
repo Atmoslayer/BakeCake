@@ -4,10 +4,17 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
 from keyboards import keyboard_client, menu_keyboard, level_keyboard, form_keyboard, topping_keyboard, berries_keyboard, decor_keyboard, inscription_keyboard, comment_keyboard, promocode_keyboard, time_keyboard
 from aiogram_calendar import simple_cal_callback, SimpleCalendar
+from handlers.payment import payment
+from create_bot import dispatcher
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # from create_bot import dispatcher
 
 order_cost = 0
+
+pay_inline_markup = InlineKeyboardMarkup(row_width=1)
+pay_button = InlineKeyboardButton(text='Оплатить', callback_data='payment')
+pay_inline_markup.insert(pay_button)
 
 
 class FSMOrder(StatesGroup):
@@ -25,6 +32,7 @@ class FSMOrder(StatesGroup):
 
 
 # начало диалога
+@dispatcher.message_handler(text='Собрать торт')
 async def order_start(message: types.Message):
     await FSMOrder.levels.set()
     await message.reply('В этом разделе вы можете собрать торт по своим предпочтениям', reply_markup=menu_keyboard)
@@ -162,7 +170,9 @@ async def specify_promocode(message: types.Message, state: FSMContext):
     # TODO Здесь запись в бд
     async with state.proxy() as cake:
         await message.reply(str(cake))
-    await message.answer(str(order_cost))
+    # await message.answer(str(order_cost))
+    await message.answer('Пожалуйста, оплатите заказ', reply_markup=pay_inline_markup)
+    payment(order_cost)
     await state.finish()
 
 

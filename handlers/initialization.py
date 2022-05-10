@@ -4,7 +4,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from create_bot import dispatcher, bot
-from functions import get_user_data_async
+from functions import get_user_data_async, get_order_data_async
 
 user_info = {'first_name': '',
              'last_name': '',
@@ -25,7 +25,7 @@ class Initialization(StatesGroup):
     waiting_for_confirm_contact = State()
 
 
-@dispatcher.message_handler(commands=['start'])
+@dispatcher.message_handler(commands='start')
 # Здесь стартует приём сообщений от пользователя
 async def check_user(message: types.Message, state: FSMContext):
     user_id = message.from_user.username
@@ -39,7 +39,7 @@ async def check_user(message: types.Message, state: FSMContext):
         await bot.send_message(message.from_user.id, text='Вы уже зарегистрированы', reply_markup=menu)
         print(user_info)
         await state.finish()
-        result = await functions.get_order_data_async(1)
+        result = await get_order_data_async(1)
         print(result)
     else: #Если данных нет, идём по процессу регистрации
         await Initialization.waiting_for_check_user.set()

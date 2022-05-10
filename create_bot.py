@@ -8,6 +8,7 @@ import os
 
 load_dotenv()
 token_bot = os.getenv('TOKEN_BOT')
+yoo_token = os.getenv('YOO_TOKEN')
 
 storage = MemoryStorage()
 
