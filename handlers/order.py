@@ -106,6 +106,7 @@ async def choose_topping(callback: types.CallbackQuery, state: FSMContext):
 # четвертый ответ
 async def choose_berries(callback: types.CallbackQuery, state: FSMContext):
     global order_cost
+    global order_data
     global user_topping
     user_input = callback.data.split(':')
     if user_input[0][3:] != 'Далее':
@@ -113,8 +114,7 @@ async def choose_berries(callback: types.CallbackQuery, state: FSMContext):
         order_cost += int(user_input[1])
         await callback.message.reply('Выберите ягоды', reply_markup=berries_keyboard)
     else:
-        async with state.proxy() as cake:
-            cake['berries'] = user_topping
+        order_data['berries'] = user_topping
         await FSMOrder.next()
         await callback.message.answer('Шаг 5')
         await callback.message.reply('Выберите декор', reply_markup=decor_keyboard)
@@ -125,14 +125,14 @@ async def choose_berries(callback: types.CallbackQuery, state: FSMContext):
 async def choose_decor(callback: types.CallbackQuery, state: FSMContext):
     global order_cost
     global user_topping
+    global order_data
     user_input = callback.data.split(':')
     if user_input[0][3:] != 'Далее':
         user_topping.append(user_input[0][3:])
         order_cost += int(user_input[1])
         await callback.message.reply('Выберите декор', reply_markup=decor_keyboard)
     else:
-        async with state.proxy() as cake:
-            cake['decor'] = user_topping
+        order_data['decor'] = user_topping
         await FSMOrder.next()
         await callback.message.answer('Шаг 6')
         await callback.message.reply('Надпись на торт', reply_markup=inscription_keyboard)
@@ -193,28 +193,15 @@ async def choose_time(message: types.Message, state: FSMContext):
 # одиннадцатый ответ
 async def specify_promocode(message: types.Message, state: FSMContext):
     global order_data
-    has_promocode = False
-    if message.text == 'У меня нет промокода':
-        order_data['promocode'] = ''
-        order_data['price'] = order_cost
-    else:
-        while not (has_promocode):
-            if message.text in promocodes:
-                    order_data['promocode'] = message.text
-                    order_data['price'] = int(order_cost * 0.8)
-                    await message.answer('Спасибо! Ваш промокод применён')
-                    has_promocode = True
-            else:
-                order_data['promocode'] = ''
-                order_data['price'] = order_cost
-                await message.answer('К сожалению, такого промокода нет. Попробуйте ввести другой')
-                has_promocode = False
+    order_data['promocode'] = message.text
+    order_data['price'] = order_cost
 
     # TODO Здесь запись в бд
 
     await create_order_async(message.from_user.username, order_data)
     # await message.answer(str(order_cost))
     await message.answer('Пожалуйста, оплатите заказ', reply_markup=pay_inline_markup)
+    payment(order_cost)
     await state.finish()
 
 

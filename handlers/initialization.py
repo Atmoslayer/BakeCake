@@ -122,7 +122,7 @@ async def confirm_contact(message: types.Message, state: FSMContext):
 @dispatcher.message_handler(text='История заказов')
 async def show_history(message: types.Message):
     for order in user_info['orders']:
-        await bot.send_message(message.from_user.id, f'Заказ от {order["date"]}, цена - {order["price"]} доставка - {order["delivery_adress"]}')
+        await bot.send_message(message.from_user.id, f'Заказ от {order["date"]}, цена - {order["price"]} ')
 
 
 
