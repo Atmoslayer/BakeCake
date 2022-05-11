@@ -121,17 +121,9 @@ async def confirm_contact(message: types.Message, state: FSMContext):
 
 @dispatcher.message_handler(text='История заказов')
 async def show_history(message: types.Message):
-    keyboard = []
     for order in user_info['orders']:
-        order_button = f'Заказ от {order["date"]}, цена - {order["price"]} доставка - {order["delivery_adress"]}'
-        keyboard.append(order_button)
+        await bot.send_message(message.from_user.id, f'Заказ от {order["date"]}, цена - {order["price"]} доставка - {order["delivery_adress"]}')
 
-    reply_markup = ReplyKeyboardMarkup(keyboard=keyboard,
-                                       resize_keyboard=True,
-                                       one_time_keyboard=True,)
-    reply_markup.add(button_start_order, button_check_orders)
-
-    await bot.send_message(message.from_user.id, text=user_info['orders'], reply_markup=reply_markup)
 
 
 

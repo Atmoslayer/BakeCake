@@ -92,9 +92,10 @@ comment_btn = KeyboardButton('Без комментария')
 comment_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
 comment_keyboard.add(comment_btn).add(cancel_button)
 
-promocode_btn = KeyboardButton('Нет промокода')
+button_have_promocode = KeyboardButton('У меня есть промокод')
+button_havent_promocode = KeyboardButton('У меня нет промокода')
 promocode_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-promocode_keyboard.add(promocode_btn).add(cancel_button)
+promocode_keyboard.add(button_have_promocode, button_havent_promocode).add(cancel_button)
 
 time_9_btn = KeyboardButton('9 часов')
 time_10_btn = KeyboardButton('10 часов')

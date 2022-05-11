@@ -1,3 +1,5 @@
+import datetime
+
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
@@ -8,6 +10,7 @@ from handlers.payment import payment
 from create_bot import dispatcher
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from functions import create_order_async
+
 
 # from create_bot import dispatcher
 
@@ -37,6 +40,7 @@ class FSMOrder(StatesGroup):
     promocode = State()
 
 
+@dispatcher.message_handler(text='Собрать торт')
 # начало диалога
 async def order_start(message: types.Message):
     await FSMOrder.levels.set()
@@ -83,6 +87,7 @@ async def choose_form(callback: types.CallbackQuery, state: FSMContext):
 # третий ответ
 async def choose_topping(callback: types.CallbackQuery, state: FSMContext):
     global order_cost
+    global order_data
     global user_topping
     user_input = callback.data.split(':')
     if user_input[0][3:] != 'Далее':
@@ -91,8 +96,7 @@ async def choose_topping(callback: types.CallbackQuery, state: FSMContext):
         await callback.message.reply('Выберите топпинг', reply_markup=topping_keyboard)
     else:
         # переход в следующее состояние
-        async with state.proxy() as cake:
-            cake['topping'] = user_topping
+        order_data['topping'] = user_topping
         await FSMOrder.next()
         await callback.message.answer('Шаг 4')
         await callback.message.reply('Выберите ягоды', reply_markup=berries_keyboard)
@@ -169,7 +173,7 @@ async def choose_date(callback: types.CallbackQuery, callback_data: dict, state:
     global order_data
     global delivery_date
     if selected:
-        order_data['delivery'] = delivery_date + date.strftime("%d/%m/%Y")
+        order_data['delivery'] = date
         await FSMOrder.next()
         await callback.message.answer('Шаг 8', reply_markup=menu_keyboard)
         await callback.message.reply('Выберите время доставки', reply_markup=time_keyboard)
@@ -178,26 +182,33 @@ async def choose_date(callback: types.CallbackQuery, callback_data: dict, state:
 
 # десятый ответ
 async def choose_time(message: types.Message, state: FSMContext):
-    async with state.proxy() as cake:
-        cake['delivery_time'] = message.text
+    order_data['delivery'] += datetime.timedelta(hours=int(message.text[:2]))
     await FSMOrder.next()
     await message.answer('Шаг 8')
-    await message.reply('Введите промокод, если он у вас есть', reply_markup=promocode_keyboard)
+    await message.reply('Есть ли у Вас промокод?', reply_markup=promocode_keyboard)
+    if message.text == 'У меня есть промокод':
+        await message.reply('Пожалуйста, введите промокод')
 
 
 # одиннадцатый ответ
 async def specify_promocode(message: types.Message, state: FSMContext):
     global order_data
-    while not message.text == 'Нет промокода':
-        if message.text in promocodes:
-                order_data['promocode'] = message.text
-                order_data['price'] = int(order_cost * 0.8)
-                await message.answer('Спасибо! Ваш промокод применён')
-                break
-        else:
-            order_data['promocode'] = ''
-            order_data['price'] = order_cost
-            await message.answer('К сожалению, такого промокода нет. Попробуйте ввести другой')
+    has_promocode = False
+    if message.text == 'У меня нет промокода':
+        order_data['promocode'] = ''
+        order_data['price'] = order_cost
+    else:
+        while not (has_promocode):
+            if message.text in promocodes:
+                    order_data['promocode'] = message.text
+                    order_data['price'] = int(order_cost * 0.8)
+                    await message.answer('Спасибо! Ваш промокод применён')
+                    has_promocode = True
+            else:
+                order_data['promocode'] = ''
+                order_data['price'] = order_cost
+                await message.answer('К сожалению, такого промокода нет. Попробуйте ввести другой')
+                has_promocode = False
 
     # TODO Здесь запись в бд
 
