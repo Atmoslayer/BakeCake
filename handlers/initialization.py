@@ -1,10 +1,12 @@
+import asyncio
+
 from aiogram import types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from create_bot import dispatcher, bot
-from functions import get_user_data_async, get_order_data_async
+from functions import get_user_data_async, get_order_data_async, create_or_update_user_async
 
 user_info = {'first_name': '',
              'last_name': '',
@@ -114,6 +116,7 @@ async def confirm_contact(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id, text='Спасибо, регистрация пройдена', reply_markup=menu)
 
     print(user_info) #К этому моменту собрана вся информация о пользователе, здесь в БД можно сохранять всё, что касается регистрации 
+    await create_or_update_user_async(user_info)
     await state.finish()
 
 
