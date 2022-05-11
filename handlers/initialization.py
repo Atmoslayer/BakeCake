@@ -38,7 +38,9 @@ async def check_user(message: types.Message, state: FSMContext):
     if user_info: #Если данные есть, говорим, что они есть и сразу переходим к процессу сборки торта
         main_menu = ReplyKeyboardMarkup(resize_keyboard=True)
         main_menu.add(button_start_order, button_check_orders)
-        await bot.send_message(message.from_user.id, text='Вы уже зарегистрированы', reply_markup=main_menu)
+        await bot.send_message(message.from_user.id,
+                               text=f'Здравствуйте, {user_info["user"]["first_name"]}, Рады видеть Вас снова!',
+                               reply_markup=main_menu)
         print(user_info)
         await state.finish()
     else: #Если данных нет, идём по процессу регистрации
