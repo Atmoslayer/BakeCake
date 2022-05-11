@@ -114,8 +114,7 @@ async def get_order_data_async(order_number):
     return result
 
 async def create_or_update_user_async(user_data):
-    result = await sync_to_async(create_or_update_user, thread_sensitive=True)(user_data=user_data)
-    return result
+    await sync_to_async(create_or_update_user, thread_sensitive=True)(user_data=user_data)
 
 async def create_order_async(telegram_id, order_data):
     await sync_to_async(create_order, thread_sensitive=True)(telegram_id=telegram_id, order_data=order_data)
