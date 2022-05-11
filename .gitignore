@@ -56,7 +56,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
-*ocker*
+Dockerfile*
 
 # Translations
 *.mo

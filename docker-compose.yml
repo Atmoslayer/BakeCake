@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+  admin-server:
+    image: "michalbl4/django_server:latest"
+    ports:
+      - 8000:8000
+    environment:
+      ALLOWED_HOST: '192.168.10.80'
+    volumes:
+      - db_data:/db
+  
+  telegram_bot:
+    image: "michalbl4/telegram_bot:latest"
+    environment:
+      TOKEN_BOT: # токен телеграм-бота
+      YOO_TOKEN: # токен оплаты
+    volumes:
+      - db_data:/db
+    
+volumes:
+  db_data:
+
