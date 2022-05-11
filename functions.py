@@ -106,7 +106,8 @@ def check_user(telegram_id):
         return False
 
 async def get_user_data_async(telegram_id):
-    await sync_to_async(get_user_data, thread_sensitive=True)(telegram_id=telegram_id)
+    result = await sync_to_async(get_user_data, thread_sensitive=True)(telegram_id=telegram_id)
+    return result
 
 async def get_order_data_async(order_number):
     result = await sync_to_async(get_order_data, thread_sensitive=True)(order_number=order_number)
