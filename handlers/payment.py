@@ -1,10 +1,10 @@
 from aiogram import types
-from aiogram.types import ContentType
+from aiogram.types import ContentType, KeyboardButton, ReplyKeyboardMarkup
 from create_bot import dispatcher, bot, yoo_token
 
-# Карта для оплаты: 1111 1111 1111 1026     12/22     000
-
 price = ''
+button_start_order = KeyboardButton('Собрать торт')
+button_check_orders = KeyboardButton('История заказов')
 
 
 def payment(price):
@@ -28,4 +28,6 @@ def payment(price):
     @dispatcher.message_handler(content_types=ContentType.SUCCESSFUL_PAYMENT)
     async def process_pay(message: types.Message):
         if message.successful_payment.invoice_payload == 'cake_payment':
-            await message.answer('Торт оплачен, спасибо!')
+            menu = ReplyKeyboardMarkup(resize_keyboard=True)
+            menu.add(button_start_order, button_check_orders)
+            await bot.send_message(message.from_user.id, text='Торт оплачен, спасибо!', reply_markup=menu)
