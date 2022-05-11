@@ -18,8 +18,7 @@ user_info = ''
 
 button_start_order = KeyboardButton('Собрать торт')
 button_check_orders = KeyboardButton('История заказов')
-main_menu = ReplyKeyboardMarkup(resize_keyboard=True)
-main_menu.add(button_start_order, button_check_orders)
+
 
 
 class Initialization(StatesGroup):
@@ -37,9 +36,6 @@ async def check_user(message: types.Message, state: FSMContext):
     global user_info
     user_info = await get_user_data_async(user_id)  #Здесь вызывается функция для получения данных о пользователе
     if user_info: #Если данные есть, говорим, что они есть и сразу переходим к процессу сборки торта
-        button_start_order = KeyboardButton('Собрать торт')
-        button_check_orders = KeyboardButton('История заказов')
-        global main_menu
         main_menu = ReplyKeyboardMarkup(resize_keyboard=True)
         main_menu.add(button_start_order, button_check_orders)
         await bot.send_message(message.from_user.id, text='Вы уже зарегистрированы', reply_markup=main_menu)
@@ -111,6 +107,8 @@ async def confirm_contact(message: types.Message, state: FSMContext):
 
     user_info['phone_number'] = str(message.contact.phone_number)
 
+    main_menu = ReplyKeyboardMarkup(resize_keyboard=True)
+    main_menu.add(button_start_order, button_check_orders)
 
     await bot.send_message(message.from_user.id, text='Спасибо, регистрация пройдена', reply_markup=main_menu)
 
@@ -121,7 +119,17 @@ async def confirm_contact(message: types.Message, state: FSMContext):
 
 @dispatcher.message_handler(text='История заказов')
 async def show_history(message: types.Message):
-    await bot.send_message(message.from_user.id, text=user_info['orders'], reply_markup=main_menu)
+    keyboard = []
+    for order in user_info['orders']:
+        order_button = f'Заказ от {order["date"]}, цена - {order["price"]} доставка - {order["delivery_adress"]}'
+        keyboard.append(order_button)
+
+    reply_markup = ReplyKeyboardMarkup(keyboard=keyboard,
+                                       resize_keyboard=True,
+                                       one_time_keyboard=True,)
+    reply_markup.add(button_start_order, button_check_orders)
+
+    await bot.send_message(message.from_user.id, text=user_info['orders'], reply_markup=reply_markup)
 
 
 
