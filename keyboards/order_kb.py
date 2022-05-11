@@ -27,6 +27,7 @@ topping_maple_btn = InlineKeyboardButton(text='Кленовый сироп', cal
 topping_strawberry_btn = InlineKeyboardButton(text='Клубничный сироп', callback_data='cb_Клубничный сироп:30000')
 topping_blueberry_btn = InlineKeyboardButton(text='Черничный сироп', callback_data='cb_Черничный сироп:35000')
 topping_milk_btn = InlineKeyboardButton(text='Молочный шоколад', callback_data='cb_Молочный шоколад:20000')
+topping_further = InlineKeyboardButton(text='Далее', callback_data='cb_Далее:0')
 
 topping_keyboard = InlineKeyboardMarkup(row_width=2)
 topping_keyboard.add(
@@ -40,13 +41,14 @@ topping_keyboard.add(
     ).row(
         topping_blueberry_btn,
         topping_milk_btn
-    )
+    ).add(topping_further)
 
 berries_none_btn = InlineKeyboardButton(text='Без ягод', callback_data='cb_Без ягод:0')
 berries_blackberry_btn = InlineKeyboardButton(text='Ежевика', callback_data='cb_Ежевика:40000')
 berries_raspberry_btn = InlineKeyboardButton(text='Малина', callback_data='cb_Малина:30000')
 berries_blueberry_btn = InlineKeyboardButton(text='Голубика', callback_data='cb_Голубика:45000')
 berries_strawberry_btn = InlineKeyboardButton(text='Клубника', callback_data='cb_Клубника:50000')
+berries_further = InlineKeyboardButton(text='Далее', callback_data='cb_Далее:0')
 
 berries_keyboard = InlineKeyboardMarkup(row_width=2)
 berries_keyboard.add(
@@ -57,7 +59,7 @@ berries_keyboard.add(
     ).row(
         berries_blueberry_btn,
         berries_strawberry_btn
-    )
+    ).add(berries_further)
 
 decor_none_btn = InlineKeyboardButton(text='Без декора', callback_data='cb_Без декора:0')
 decor_pistachios_btn = InlineKeyboardButton(text='Фисташки', callback_data='cb_Фисташки:30000')
@@ -66,6 +68,7 @@ decor_hazelnut_btn = InlineKeyboardButton(text='Фундук', callback_data='cb
 decor_pecan_btn = InlineKeyboardButton(text='Пекан', callback_data='cb_Пекан:30000')
 decor_marshmallow_btn = InlineKeyboardButton(text='Маршмеллоу', callback_data='cb_Маршмеллоу:20000')
 decor_marzipan_btn = InlineKeyboardButton(text='Марципан', callback_data='cb_Марципан:28000')
+decor_further = InlineKeyboardButton(text='Далее', callback_data='cb_Далее:0')
 
 decor_keyboard = InlineKeyboardMarkup(row_width=2)
 decor_keyboard.add(
@@ -79,7 +82,7 @@ decor_keyboard.add(
     ).row(
         decor_marshmallow_btn,
         decor_marzipan_btn
-    )
+    ).add(decor_further)
 
 inscription_btn = KeyboardButton('Без надписи')
 inscription_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
