@@ -10,7 +10,6 @@ from functions import get_user_data_async, get_order_data_async, create_or_updat
 
 user_info = {'first_name': '',
              'last_name': '',
-             'username': '',
              'id': '',
              'phone_number': ''}
 
@@ -54,8 +53,7 @@ async def get_name(message: types.Message):
     username = message.from_user.username
     user_info['first_name'] = message.from_user.first_name
     user_info['last_name'] = message.from_user.last_name
-    user_info['username'] = message.from_user.username
-    user_info['id'] = message.from_user.id
+    user_info['id'] = message.from_user.username
     keyboard_markup = types.InlineKeyboardMarkup()
     user_agree_button = types.InlineKeyboardButton('Да, моё', callback_data='1')
     user_disagree_button = types.InlineKeyboardButton('Нет, ввести имя', callback_data='2')
