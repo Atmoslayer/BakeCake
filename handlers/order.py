@@ -14,6 +14,9 @@ from functions import create_order_async
 order_cost = 0
 user_topping = []
 
+order_data = {}
+promocodes = ['async', 'to', 'sync']
+delivery_date = ''
 
 pay_inline_markup = InlineKeyboardMarkup(row_width=1)
 pay_button = InlineKeyboardButton(text='Оплатить', callback_data='payment')
@@ -54,10 +57,10 @@ async def cancel_handler(message: types.Message, state: FSMContext):
 # ловим первый ответ
 async def choose_levels(callback: types.CallbackQuery, state: FSMContext):
     global order_cost
+    global order_data
     user_input = callback.data.split(':')
     order_cost += int(user_input[1])
-    async with state.proxy() as cake:
-        cake['levels'] = user_input[0][3:]
+    order_data['layers'] = user_input[0][3:]
     await FSMOrder.next()
     await callback.message.answer('Шаг 2')
     await callback.message.reply('Выберите форму торта', reply_markup=form_keyboard)
@@ -67,10 +70,10 @@ async def choose_levels(callback: types.CallbackQuery, state: FSMContext):
 # ловим второй ответ
 async def choose_form(callback: types.CallbackQuery, state: FSMContext):
     global order_cost
+    global order_data
     user_input = callback.data.split(':')
     order_cost += int(user_input[1])
-    async with state.proxy() as cake:
-        cake['form'] = user_input[0][3:]
+    order_data['form'] = user_input[0][3:]
     await FSMOrder.next()
     await callback.message.answer('Шаг 3')
     await callback.message.reply('Выберите топпинг', reply_markup=topping_keyboard)
@@ -134,8 +137,8 @@ async def choose_decor(callback: types.CallbackQuery, state: FSMContext):
 
 # шестой ответ
 async def choose_inscription(message: types.Message, state: FSMContext):
-    async with state.proxy() as cake:
-        cake['inscription'] = message.text
+    global order_data
+    order_data['inscription'] = message.text
     await FSMOrder.next()
     await message.answer('Шаг 7')
     await message.reply('Комментарий к заказу', reply_markup=comment_keyboard)
@@ -143,8 +146,8 @@ async def choose_inscription(message: types.Message, state: FSMContext):
 
 # седьмой ответ
 async def get_comment(message: types.Message, state: FSMContext):
-    async with state.proxy() as cake:
-        cake['comment'] = message.text
+    global order_data
+    order_data['comment'] = message.text
     await FSMOrder.next()
     await message.answer('Шаг 8')
     await message.reply('Укажите адрес доставки', reply_markup=menu_keyboard)
@@ -153,8 +156,8 @@ async def get_comment(message: types.Message, state: FSMContext):
 # восьмой ответ
 async def specify_adress(message: types.Message, state: FSMContext):
     # TODO Уточнение адреса из бд
-    async with state.proxy() as cake:
-        cake['delivery_adress'] = message.text
+    global delivery_date
+    delivery_date = message.text
     await FSMOrder.next()
     await message.answer('Шаг 7', reply_markup=menu_keyboard)
     await message.reply('Выберите дату доставки', reply_markup=await SimpleCalendar().start_calendar())
@@ -163,9 +166,10 @@ async def specify_adress(message: types.Message, state: FSMContext):
 # девятый ответ
 async def choose_date(callback: types.CallbackQuery, callback_data: dict, state: FSMContext):
     selected, date = await SimpleCalendar().process_selection(callback, callback_data)
+    global order_data
+    global delivery_date
     if selected:
-        async with state.proxy() as cake:
-            cake['delivery_date'] = date.strftime("%d/%m/%Y")
+        order_data['delivery'] = delivery_date + date.strftime("%d/%m/%Y")
         await FSMOrder.next()
         await callback.message.answer('Шаг 8', reply_markup=menu_keyboard)
         await callback.message.reply('Выберите время доставки', reply_markup=time_keyboard)
@@ -183,16 +187,21 @@ async def choose_time(message: types.Message, state: FSMContext):
 
 # одиннадцатый ответ
 async def specify_promocode(message: types.Message, state: FSMContext):
-    async with state.proxy() as cake:
-        cake['promocode'] = message.text
-        cake['price'] = order_cost
+    global order_data
+    while not message.text == 'Нет промокода':
+        if message.text in promocodes:
+                order_data['promocode'] = message.text
+                order_data['price'] = int(order_cost * 0.8)
+                await message.answer('Спасибо! Ваш промокод применён')
+                break
+        else:
+            order_data['promocode'] = ''
+            order_data['price'] = order_cost
+            await message.answer('К сожалению, такого промокода нет. Попробуйте ввести другой')
+
     # TODO Здесь запись в бд
 
-    async with state.proxy() as cake:
-        # await message.reply(str(cake))
-        FSMContextProxy_state, order_data = str(cake)
-        print(order_data)
-        await create_order_async(message.from_user.username, cake)
+    await create_order_async(message.from_user.username, order_data)
     # await message.answer(str(order_cost))
     await message.answer('Пожалуйста, оплатите заказ', reply_markup=pay_inline_markup)
     await state.finish()
