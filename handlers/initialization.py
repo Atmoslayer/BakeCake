@@ -6,16 +6,20 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from create_bot import dispatcher, bot
-from functions import get_user_data_async, get_order_data_async, create_or_update_user_async
+from functions import get_user_data_async, create_or_update_user_async
 
 user_info = {'first_name': '',
              'last_name': '',
              'id': '',
              'phone_number': ''}
 
-menu = ''
 
-username = ''
+user_info = ''
+
+button_start_order = KeyboardButton('Собрать торт')
+button_check_orders = KeyboardButton('История заказов')
+main_menu = ReplyKeyboardMarkup(resize_keyboard=True)
+main_menu.add(button_start_order, button_check_orders)
 
 
 class Initialization(StatesGroup):
@@ -30,18 +34,17 @@ class Initialization(StatesGroup):
 # Здесь стартует приём сообщений от пользователя
 async def check_user(message: types.Message, state: FSMContext):
     user_id = message.from_user.username
+    global user_info
     user_info = await get_user_data_async(user_id)  #Здесь вызывается функция для получения данных о пользователе
     if user_info: #Если данные есть, говорим, что они есть и сразу переходим к процессу сборки торта
         button_start_order = KeyboardButton('Собрать торт')
         button_check_orders = KeyboardButton('История заказов')
-        global menu
-        menu = ReplyKeyboardMarkup(resize_keyboard=True)
-        menu.add(button_start_order, button_check_orders)
-        await bot.send_message(message.from_user.id, text='Вы уже зарегистрированы', reply_markup=menu)
+        global main_menu
+        main_menu = ReplyKeyboardMarkup(resize_keyboard=True)
+        main_menu.add(button_start_order, button_check_orders)
+        await bot.send_message(message.from_user.id, text='Вы уже зарегистрированы', reply_markup=main_menu)
         print(user_info)
         await state.finish()
-        result = await get_order_data_async(1)
-        print(result)
     else: #Если данных нет, идём по процессу регистрации
         await Initialization.waiting_for_check_user.set()
 
@@ -59,7 +62,8 @@ async def get_name(message: types.Message):
     user_disagree_button = types.InlineKeyboardButton('Нет, ввести имя', callback_data='2')
     keyboard_markup.row(user_agree_button, user_disagree_button)
     await Initialization.waiting_for_enter_name.set()
-    await message.answer(f'Здравствуйте, {message.from_user.first_name} {message.from_user.last_name}! Это Ваше имя?', reply_markup=keyboard_markup)
+    await message.answer(f'Здравствуйте, {message.from_user.first_name} {message.from_user.last_name}! Это Ваше имя?',
+                         reply_markup=keyboard_markup)
 
 
 @dispatcher.callback_query_handler(text='1', state=Initialization.waiting_for_enter_name)
@@ -95,8 +99,10 @@ async def read_name(message: types.Message):
 
 @dispatcher.callback_query_handler(text='get_number', state=Initialization.waiting_for_enter_contact)
 async def get_contact(message: types.Message):
-    markup_request = ReplyKeyboardMarkup(resize_keyboard=True).add(KeyboardButton('Поделиться контактом ', request_contact=True))
-    await bot.send_message(message.from_user.id, text='Пожалуйста, поделитесь своим номером телефона', reply_markup=markup_request)
+    markup_request = ReplyKeyboardMarkup(resize_keyboard=True).add(KeyboardButton('Поделиться контактом ',
+                                                                                  request_contact=True))
+    await bot.send_message(message.from_user.id, text='Пожалуйста, поделитесь своим номером телефона',
+                           reply_markup=markup_request)
     await Initialization.waiting_for_confirm_contact.set()
 
 
@@ -105,17 +111,18 @@ async def confirm_contact(message: types.Message, state: FSMContext):
 
     user_info['phone_number'] = str(message.contact.phone_number)
 
-    button_start_order = KeyboardButton('Собрать торт')
-    button_check_orders = KeyboardButton('История заказов')
-    global menu
-    menu = ReplyKeyboardMarkup(resize_keyboard=True)
-    menu.add(button_start_order, button_check_orders)
 
-    await bot.send_message(message.from_user.id, text='Спасибо, регистрация пройдена', reply_markup=menu)
+    await bot.send_message(message.from_user.id, text='Спасибо, регистрация пройдена', reply_markup=main_menu)
 
     print(user_info) #К этому моменту собрана вся информация о пользователе, здесь в БД можно сохранять всё, что касается регистрации 
     await create_or_update_user_async(user_info)
     await state.finish()
+
+
+@dispatcher.message_handler(text='История заказов')
+async def show_history(message: types.Message):
+    await bot.send_message(message.from_user.id, text=user_info['orders'], reply_markup=main_menu)
+
 
 
 # defegister_handlers_food(dp: dispatcher):
