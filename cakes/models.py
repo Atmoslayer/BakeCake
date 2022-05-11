@@ -27,8 +27,10 @@ class Order(models.Model):
         on_delete=models.SET_NULL,
         null = True
     )
-    layers = models.IntegerField(
-        'Количество слоев'
+    layers = models.CharField(
+        'Количество слоев',
+        max_length=50,
+        default=''
     )
     shape = models.CharField(
         'Форма',
